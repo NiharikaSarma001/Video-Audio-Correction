@@ -30,8 +30,8 @@ def run_app():
 
 def handle_video_processing(uploaded_video):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
-        temp_video.write(uploaded_video.read())
         video_file_path = temp_video.name
+        temp_video.write(uploaded_video.read())
 
     st.info("Extracting audio from the video...")
     audio_file_path = extract_audio(video_file_path)
@@ -54,9 +54,17 @@ def handle_video_processing(uploaded_video):
 
     st.info("Merging corrected audio with the video...")
     final_video_path = "final_video.mp4"
-    combine_audio_and_video(video_file_path, corrected_audio_file, final_video_path)
-    st.success("Video processing finished.")
-    st.video(final_video_path)
+
+    try:
+        combine_audio_and_video(video_file_path, corrected_audio_file, final_video_path)
+        if os.path.exists(final_video_path):
+            st.success("Video processing finished.")
+            st.video(final_video_path)
+        else:
+            st.error("Final video was not created.")
+    except Exception as e:
+        st.error(f"An error occurred during video processing: {e}")
+
 
 def extract_audio(video_path):
     """Extract audio from the video file and save as MP3."""
