@@ -134,9 +134,11 @@ def create_audio_from_text(text, output_audio_path):
     with open(output_audio_path, "wb") as audio_file:
         audio_file.write(response.audio_content)
 
-def combine_audio_and_video(video_path, audio_path, output_video_path):
-    command = f"ffmpeg -i {video_path} -i {audio_path} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {output_video_path}"
-    subprocess.run(command, shell=True)
+def combine_audio_and_video(video_file, audio_file, output_file):
+    video = VideoFileClip(video_file)
+    audio = AudioFileClip(audio_file)
+    final_video = video.set_audio(audio)
+    final_video.write_videofile(output_file, codec='libx264', audio_codec='aac')
 
 if __name__ == "__main__":
     run_app()
