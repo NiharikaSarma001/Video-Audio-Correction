@@ -65,9 +65,9 @@ def extract_audio(video_path):
 
 
 def transcribe_audio(audio_file_path):
-    credentials = service_account.Credentials.from_service_account_file(
-        r"C:\Users\nihar\Downloads\assignment\audio-correction-poc-f0c0119aaaff.json"
-    )
+    # Load the credentials from the environment variable
+    credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+    credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
     client = speech.SpeechClient(credentials=credentials)
 
@@ -85,7 +85,6 @@ def transcribe_audio(audio_file_path):
 
     full_transcription = " ".join([result.alternatives[0].transcript for result in response.results])
     return full_transcription
-
 
 def refine_transcription(transcription):
     azure_api_key = "22ec84421ec24230a3638d1b51e3a7dc"  # Consider using environment variables
@@ -113,9 +112,9 @@ def refine_transcription(transcription):
 
 
 def create_audio_from_text(text, output_audio_path):
-    credentials = service_account.Credentials.from_service_account_file(
-        r"C:\Users\nihar\Downloads\assignment\audio-correction-poc-f0c0119aaaff.json"
-    )
+    # Load the credentials from the environment variable
+    credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+    credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
     client = texttospeech.TextToSpeechClient(credentials=credentials)
 
@@ -134,7 +133,6 @@ def create_audio_from_text(text, output_audio_path):
 
     with open(output_audio_path, "wb") as audio_file:
         audio_file.write(response.audio_content)
-
 
 def combine_audio_and_video(video_path, audio_path, output_video_path):
     command = f"ffmpeg -i {video_path} -i {audio_path} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {output_video_path}"
