@@ -10,7 +10,10 @@ import subprocess
 import os
 
 credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-
+if credentials_path is None:
+    st.error("GOOGLE_APPLICATION_CREDENTIALS is not set.")
+else:
+    st.success(f"GOOGLE_APPLICATION_CREDENTIALS is set to: {credentials_path}")
 
 
 def run_app():
