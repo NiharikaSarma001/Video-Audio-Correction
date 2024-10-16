@@ -1,6 +1,6 @@
 import json
 import streamlit as st
-from moviepy.editor import VideoFileClip
+from moviepy.editor import VideoFileClip, AudioFileClip
 import tempfile
 from google.cloud import speech
 from google.cloud import texttospeech
