@@ -9,6 +9,9 @@ import requests
 import subprocess
 import os
 
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "C:\\Users\\nihar\\Downloads\\assignment\\audio-correction-poc-f0c0119aaaff.json"
+
+
 credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 if credentials_path is None:
     st.error("GOOGLE_APPLICATION_CREDENTIALS is not set.")
