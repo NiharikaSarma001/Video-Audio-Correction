@@ -1,3 +1,4 @@
+import json
 import streamlit as st
 from moviepy.editor import VideoFileClip
 import tempfile
@@ -9,27 +10,23 @@ import requests
 import subprocess
 import os
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "C:\\Users\\nihar\\Downloads\\assignment\\audio-correction-poc-f0c0119aaaff.json"
+# Load credentials from the secrets
+credentials_info = st.secrets["general"]
+credentials = service_account.Credentials.from_service_account_info(credentials_info)
 
-
-credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-if credentials_path is None:
-    st.error("GOOGLE_APPLICATION_CREDENTIALS is not set.")
-else:
-    st.success(f"GOOGLE_APPLICATION_CREDENTIALS is set to: {credentials_path}")
-
+# Set the GOOGLE_APPLICATION_CREDENTIALS environment variable if needed
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_info['private_key']
 
 def run_app():
     st.title("Video Audio Correction Tool")
-
+    
     uploaded_video = st.file_uploader("Choose a video file (mp4, avi, mov):", type=["mp4", "avi", "mov"])
-
+    
     if uploaded_video:
         st.video(uploaded_video)
-
+        
         if st.button("Start Processing"):
             handle_video_processing(uploaded_video)
-
 
 def handle_video_processing(uploaded_video):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
@@ -61,7 +58,6 @@ def handle_video_processing(uploaded_video):
     st.success("Video processing finished.")
     st.video(final_video_path)
 
-
 def extract_audio(video_path):
     """Extract audio from the video file and save as MP3."""
     video_clip = VideoFileClip(video_path)
@@ -69,14 +65,8 @@ def extract_audio(video_path):
     video_clip.audio.write_audiofile(audio_file_path)
     return audio_file_path
 
-
 def transcribe_audio(audio_file_path):
-    # Load the credentials from the environment variable
-    credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS').strip()  # Clean the path
-    st.write("Credentials path:", credentials_path)  # Debug output
-    st.write("Path length:", len(credentials_path))  # Debug length
-
-    credentials = service_account.Credentials.from_service_account_file(credentials_path)
+    client = speech.SpeechClient(credentials=credentials)
 
     with io.open(audio_file_path, "rb") as audio_file:
         audio_content = audio_file.read()
@@ -92,7 +82,7 @@ def transcribe_audio(audio_file_path):
 
     full_transcription = " ".join([result.alternatives[0].transcript for result in response.results])
     return full_transcription
-    
+
 def refine_transcription(transcription):
     azure_api_key = "22ec84421ec24230a3638d1b51e3a7dc"  # Consider using environment variables
     azure_api_url = "https://internshala.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
@@ -117,12 +107,7 @@ def refine_transcription(transcription):
         st.error(f"Error correcting transcription: {response.status_code} - {response.text}")
         return ""
 
-
 def create_audio_from_text(text, output_audio_path):
-    # Load the credentials from the environment variable
-    credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-    credentials = service_account.Credentials.from_service_account_file(credentials_path)
-
     client = texttospeech.TextToSpeechClient(credentials=credentials)
 
     input_text = texttospeech.SynthesisInput(text=text)
@@ -144,7 +129,6 @@ def create_audio_from_text(text, output_audio_path):
 def combine_audio_and_video(video_path, audio_path, output_video_path):
     command = f"ffmpeg -i {video_path} -i {audio_path} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {output_video_path}"
     subprocess.run(command, shell=True)
-    
 
 if __name__ == "__main__":
     run_app()
