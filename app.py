@@ -7,6 +7,10 @@ from google.oauth2 import service_account
 import io
 import requests
 import subprocess
+import os
+
+credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
 
 
 def run_app():
