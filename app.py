@@ -72,10 +72,11 @@ def extract_audio(video_path):
 
 def transcribe_audio(audio_file_path):
     # Load the credentials from the environment variable
-    credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-    credentials = service_account.Credentials.from_service_account_file(credentials_path)
+    credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS').strip()  # Clean the path
+    st.write("Credentials path:", credentials_path)  # Debug output
+    st.write("Path length:", len(credentials_path))  # Debug length
 
-    client = speech.SpeechClient(credentials=credentials)
+    credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
     with io.open(audio_file_path, "rb") as audio_file:
         audio_content = audio_file.read()
@@ -91,7 +92,7 @@ def transcribe_audio(audio_file_path):
 
     full_transcription = " ".join([result.alternatives[0].transcript for result in response.results])
     return full_transcription
-
+    
 def refine_transcription(transcription):
     azure_api_key = "22ec84421ec24230a3638d1b51e3a7dc"  # Consider using environment variables
     azure_api_url = "https://internshala.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
