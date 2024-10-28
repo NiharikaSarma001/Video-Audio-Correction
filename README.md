@@ -61,7 +61,7 @@ To run the Streamlit app locally, use:
 
 ```bash
 streamlit run app.py
-'''
+```
 
 ## Environment Variables
 
@@ -70,3 +70,20 @@ For the app to work properly, you need to configure the following environment va
 - GOOGLE_APPLICATION_CREDENTIALS: Path to your Google Cloud credentials file or use the private key setup in the Streamlit secrets.
 - AZURE_API_KEY: Your Azure OpenAI API key for GPT-4o.
 - AZURE_API_URL: Your Azure OpenAI GPT-4o API endpoint URL
+
+## Credits
+
+- Streamlit: streamlit.io
+- MoviePy: moviepy.org
+- Google Cloud Speech-to-Text: Google Cloud
+- Google Cloud Text-to-Speech: Google Cloud
+- GPT-4o by Azure: Azure OpenAI
+
+## Deployment
+
+This application has been deployed using Streamlit Sharing. You can access the live version at: [ https://video-audio-correction-nbqh5qxrdzunkacvditcpg.streamlit.app/ ]
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
